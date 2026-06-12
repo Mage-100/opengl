@@ -1,0 +1,6 @@
+__cmake_systeminformation
+
+build/
+
+vcpkg/
+.clangd
