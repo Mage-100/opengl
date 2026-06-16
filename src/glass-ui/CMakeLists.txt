@@ -13,6 +13,8 @@ target_link_libraries(glass-ui PRIVATE
 set(GLASS_UI_SHADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders/vertex.glsl"
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders/fragment.glsl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/screenVertex.glsl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/screenFragment.glsl"
 )
 
 set(GLASS_UI_SHADER_OUTPUTS "")
