@@ -1,47 +1,40 @@
 project(glass-ui)
 
-add_executable(glass-ui main.cpp)
+add_library(core
+    "Framebuffer.cpp"
+    "VertexBuffer.cpp"
+    "VertexArray.cpp"
+    "VertexBufferLayout.cpp"
+    "Camera.cpp"
+)
 
-
-target_link_libraries(glass-ui PRIVATE
+target_link_libraries(core PUBLIC
     common_headers
     glm::glm
     glad::glad
     glfw
+    imgui::imgui
 )
 
-set(GLASS_UI_SHADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/vertex.glsl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/fragment.glsl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/screenVertex.glsl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/screenFragment.glsl"
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug )
+target_compile_definitions(core PUBLIC
+    DEBUG_BUILD
+    SHADERS_SOURCE="${CMAKE_CURRENT_SOURCE_DIR}/shaders/"
+    ASSETS_SOURCE="${CMAKE_CURRENT_SOURCE_DIR}/assets/"
+)
+endif()
+
+file(GLOB EXAMPLES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ex_*.cpp"
 )
 
-set(GLASS_UI_SHADER_OUTPUTS "")
-foreach(SHADER ${GLASS_UI_SHADERS})
-    file(RELATIVE_PATH REL "${CMAKE_CURRENT_SOURCE_DIR}/shaders" "${SHADER}")
-    set(OUT "${CMAKE_CURRENT_BINARY_DIR}/shaders/${REL}")
 
-    add_custom_command(
-        OUTPUT ${OUT}
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/shaders"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SHADER}" "${OUT}"
-        DEPENDS "${SHADER}"
-        COMMENT "Copying Shader: ${REL}"
+foreach(example ${EXAMPLES})
+    message(STATUS "Found example: " ${example})
+    get_filename_component(name ${example} NAME_WE)
+    add_executable(${name} ${example})
+    target_link_libraries(${name} PRIVATE
+        core
     )
-    list(APPEND GLASS_UI_SHADER_OUTPUTS ${OUT})
 endforeach()
-
-add_custom_target(glass_ui_shaders ALL
-    DEPENDS ${GLASS_UI_SHADER_OUTPUTS}
-)
-
-add_custom_target(TARGET glass-ui POST_BUILD
-    COMMAND  ${CMAKE_COMMAND} -E copy_directory_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
-        "$<TARGET_FILE_DIR:glass-ui>/shaders"
-    DEPENDS ${GLASS_UI_SHADERS}
-    COMMENT "Staging shaders alongside glass-ui executable"
-)
-
-add_dependencies(glass-ui glass_ui_shaders)
