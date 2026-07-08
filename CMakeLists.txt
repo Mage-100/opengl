@@ -13,4 +13,5 @@ target_include_directories(common_headers INTERFACE
     "${CMAKE_SOURCE_DIR}/include"
 )
 
+add_subdirectory(src/core-template)
 add_subdirectory(src/glass-ui)

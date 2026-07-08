@@ -1,6 +1,13 @@
 project(glass-ui)
 
+add_library(precompile INTERFACE)
+
+target_precompile_headers(precompile INTERFACE
+    "pch.h"
+)
+
 add_library(core
+    "Window.cpp"
     "Framebuffer.cpp"
     "VertexBuffer.cpp"
     "VertexArray.cpp"
@@ -9,6 +16,7 @@ add_library(core
 )
 
 target_link_libraries(core PUBLIC
+    precompile
     common_headers
     glm::glm
     glad::glad

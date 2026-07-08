@@ -5,3 +5,5 @@ build/
 
 vcpkg/
 .clangd
+
+imgui.ini
